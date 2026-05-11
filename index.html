@@ -174,31 +174,32 @@ setInterval(clearOldMessages, 60 * 60 * 1000);
 
     
     // ── Stream status ──────────────────────────────────────────────
-    function checkStream() {
-      fetch('https://radio.radioriad.com/status-json.xsl')
-        .then(res => res.json())
-        .then(data => {
-          const sources = data.icestats.source;
-          const el = document.getElementById('status');
-          const txt = document.getElementById('status-text');
-          if (sources) {
-            el.className = 'on';
-            txt.textContent = 'ON AIR';
-          } else {
-            el.className = 'off';
-            txt.textContent = 'OFF AIR';
-          }
-        })
-        .catch(() => {
-          const el = document.getElementById('status');
-          const txt = document.getElementById('status-text');
-          el.className = 'off';
-          txt.textContent = 'OFF AIR';
-        });
-    }
+function checkStream() {
+  const el = document.getElementById('status');
+  const txt = document.getElementById('status-text');
+  
+  // Set to OFF AIR immediately while checking
+  el.className = 'off';
+  txt.textContent = 'OFF AIR';
 
-    checkStream();
-    setInterval(checkStream, 30000);
+  fetch('https://radio.radioriad.com/stream', { method: 'HEAD' })
+    .then(res => {
+      if (res.ok) {
+        el.className = 'on';
+        txt.textContent = 'ON AIR';
+      } else {
+        el.className = 'off';
+        txt.textContent = 'OFF AIR';
+      }
+    })
+    .catch(() => {
+      el.className = 'off';
+      txt.textContent = 'OFF AIR';
+    });
+}
+
+checkStream();
+setInterval(checkStream, 30000);
 
     // ── Firebase chat ──────────────────────────────────────────────
 const firebaseConfig = {
