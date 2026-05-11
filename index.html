@@ -141,7 +141,7 @@
     <h1>radio riad</h1>
 
     <p id="status" class="off">
-      <span class="dot"></span><span id="status-text">checking...</span>
+      <span class="dot"></span><span id="status-text">OFF AIR</span>
     </p>
 
     <audio id="player" controls autoplay>
@@ -159,63 +159,56 @@
   </div>
 
   <script>
-
-
-    // Auto-clear chat every hour
-function clearOldMessages() {
-  const oneHourAgo = Date.now() - (60 * 60 * 1000);
-  chatRef.orderByChild('timestamp').endAt(oneHourAgo).once('value', snapshot => {
-    snapshot.forEach(child => child.ref.remove());
-  });
-}
-
-clearOldMessages();
-setInterval(clearOldMessages, 60 * 60 * 1000);
-
-    
     // ── Stream status ──────────────────────────────────────────────
-function checkStream() {
-  const el = document.getElementById('status');
-  const txt = document.getElementById('status-text');
-  
-  // Set to OFF AIR immediately while checking
-  el.className = 'off';
-  txt.textContent = 'OFF AIR';
+    function checkStream() {
+      const el = document.getElementById('status');
+      const txt = document.getElementById('status-text');
 
-  fetch('https://radio.radioriad.com/stream', { method: 'HEAD' })
-    .then(res => {
-      if (res.ok) {
-        el.className = 'on';
-        txt.textContent = 'ON AIR';
-      } else {
-        el.className = 'off';
-        txt.textContent = 'OFF AIR';
-      }
-    })
-    .catch(() => {
-      el.className = 'off';
-      txt.textContent = 'OFF AIR';
-    });
-}
+      fetch('https://radio.radioriad.com/stream', { method: 'HEAD' })
+        .then(res => {
+          if (res.ok) {
+            el.className = 'on';
+            txt.textContent = 'ON AIR';
+          } else {
+            el.className = 'off';
+            txt.textContent = 'OFF AIR';
+          }
+        })
+        .catch(() => {
+          el.className = 'off';
+          txt.textContent = 'OFF AIR';
+        });
+    }
 
-checkStream();
-setInterval(checkStream, 30000);
+    checkStream();
+    setInterval(checkStream, 30000);
 
     // ── Firebase chat ──────────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyCMQ5lB_PVpl29SrMP8Xzd4NmE0Bk-Mnag",
-  authDomain: "radio-riad.firebaseapp.com",
-  databaseURL: "https://radio-riad-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "radio-riad",
-  storageBucket: "radio-riad.firebasestorage.app",
-  messagingSenderId: "1026896473190",
-  appId: "1:1026896473190:web:dc54584165eac5d7d811a7"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCMQ5lB_PVpl29SrMP8Xzd4NmE0Bk-Mnag",
+      authDomain: "radio-riad.firebaseapp.com",
+      databaseURL: "https://radio-riad-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "radio-riad",
+      storageBucket: "radio-riad.firebasestorage.app",
+      messagingSenderId: "1026896473190",
+      appId: "1:1026896473190:web:dc54584165eac5d7d811a7"
+    };
 
     firebase.initializeApp(firebaseConfig);
 
     const db = firebase.database();
     const chatRef = db.ref('chat');
+
+    // Auto-clear messages older than 1 hour
+    function clearOldMessages() {
+      const oneHourAgo = Date.now() - (60 * 60 * 1000);
+      chatRef.orderByChild('timestamp').endAt(oneHourAgo).once('value', snapshot => {
+        snapshot.forEach(child => child.ref.remove());
+      });
+    }
+
+    clearOldMessages();
+    setInterval(clearOldMessages, 60 * 60 * 1000);
 
     function sendMessage() {
       const username = document.getElementById('username').value || 'anon';
