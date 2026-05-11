@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radio Riad</title>
+ 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+ 
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white;
+      font-family: 'Courier New', Courier, monospace;
+      color: black;
+    }
+ 
+    .container {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      padding: 20px;
+    }
+ 
+    h1 {
+      font-size: 42px;
+      font-weight: normal;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+ 
+    audio {
+      width: 100%;
+      margin-bottom: 40px;
+    }
+ 
+    #chat {
+      height: 220px;
+      overflow-y: auto;
+      border: 1px solid black;
+      padding: 12px;
+      text-align: left;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+ 
+    .message {
+      margin-bottom: 8px;
+      word-wrap: break-word;
+    }
+ 
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+ 
+    input {
+      font-family: inherit;
+      border: 1px solid black;
+      padding: 10px;
+      background: white;
+      color: black;
+    }
+ 
+    #username {
+      width: 120px;
+    }
+ 
+    #message {
+      flex: 1;
+    }
+ 
+    button {
+      font-family: inherit;
+      border: 1px solid black;
+      background: black;
+      color: white;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+ 
+    button:hover {
+      background: white;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+ 
+  <div class="container">
+    <h1>radio riad</h1>
+ 
+    <audio controls autoplay>
+      <source src="YOUR_STREAM_URL_HERE" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+ 
+    <div id="chat"></div>
+ 
+    <div class="controls">
+      <input type="text" id="username" placeholder="name">
+      <input type="text" id="message" placeholder="message">
+      <button onclick="sendMessage()">send</button>
+    </div>
+  </div>
+ 
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMQ5lB_PVpl29SrMP8Xzd4NmE0Bk-Mnag",
+    authDomain: "radio-riad.firebaseapp.com",
+    projectId: "radio-riad",
+    storageBucket: "radio-riad.firebasestorage.app",
+    messagingSenderId: "1026896473190",
+    appId: "1:1026896473190:web:dc54584165eac5d7d811a7"
+  };
+
+ 
+    firebase.initializeApp(firebaseConfig);
+ 
+    const db = firebase.database();
+    const chatRef = db.ref('chat');
+ 
+    function sendMessage() {
+      const username = document.getElementById('username').value || 'anon';
+      const message = document.getElementById('message').value;
+ 
+      if (message.trim() === '') return;
+ 
+      chatRef.push({
+        username,
+        message,
+        timestamp: Date.now()
+      });
+ 
+      document.getElementById('message').value = '';
+    }
+ 
+    chatRef.limitToLast(50).on('child_added', snapshot => {
+      const data = snapshot.val();
+ 
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.innerHTML = `<strong>${data.username}</strong>: ${data.message}`;
+ 
+      const chat = document.getElementById('chat');
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    });
+ 
+    document.getElementById('message').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
+ 
+</body>
+</html>
