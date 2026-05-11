@@ -159,6 +159,20 @@
   </div>
 
   <script>
+
+
+    // Auto-clear chat every hour
+function clearOldMessages() {
+  const oneHourAgo = Date.now() - (60 * 60 * 1000);
+  chatRef.orderByChild('timestamp').endAt(oneHourAgo).once('value', snapshot => {
+    snapshot.forEach(child => child.ref.remove());
+  });
+}
+
+clearOldMessages();
+setInterval(clearOldMessages, 60 * 60 * 1000);
+
+    
     // ── Stream status ──────────────────────────────────────────────
     function checkStream() {
       fetch('https://radio.radioriad.com/status-json.xsl')
