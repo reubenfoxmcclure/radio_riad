@@ -187,14 +187,15 @@
     setInterval(checkStream, 30000);
 
     // ── Firebase chat ──────────────────────────────────────────────
-    const firebaseConfig = {
-      apiKey: "AIzaSyCMQ5lB_PVpl29SrMP8Xzd4NmE0Bk-Mnag",
-      authDomain: "radio-riad.firebaseapp.com",
-      projectId: "radio-riad",
-      storageBucket: "radio-riad.firebasestorage.app",
-      messagingSenderId: "1026896473190",
-      appId: "1:1026896473190:web:dc54584165eac5d7d811a7"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyCMQ5lB_PVpl29SrMP8Xzd4NmE0Bk-Mnag",
+  authDomain: "radio-riad.firebaseapp.com",
+  databaseURL: "https://radio-riad-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "radio-riad",
+  storageBucket: "radio-riad.firebasestorage.app",
+  messagingSenderId: "1026896473190",
+  appId: "1:1026896473190:web:dc54584165eac5d7d811a7"
+};
 
     firebase.initializeApp(firebaseConfig);
 
