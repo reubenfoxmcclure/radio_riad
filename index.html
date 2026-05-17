@@ -160,18 +160,27 @@
 
   <script>
     // ── Stream status ──────────────────────────────────────────────
-    function checkStream() {
-      const el = document.getElementById('status');
-      const txt = document.getElementById('status-text');
+function checkStream() {
+  const el = document.getElementById('status');
+  const txt = document.getElementById('status-text');
 
-      fetch('https://radio.radioriad.com/stream', { method: 'HEAD' })
-        .then(res => {
-          if (res.ok) {
-            el.className = 'on';
-            txt.textContent = 'ON AIR';
-          } else {
-            el.className = 'off';
-            txt.textContent = 'OFF AIR';
+  fetch('https://radio.radioriad.com/status-json.xsl')
+    .then(res => res.json())
+    .then(data => {
+      const sources = data.icestats.source;
+      if (sources) {
+        el.className = 'on';
+        txt.textContent = 'ON AIR';
+      } else {
+        el.className = 'off';
+        txt.textContent = 'OFF AIR';
+      }
+    })
+    .catch(() => {
+      el.className = 'off';
+      txt.textContent = 'OFF AIR';
+    });
+}
           }
         })
         .catch(() => {
