@@ -181,13 +181,6 @@ function checkStream() {
       txt.textContent = 'OFF AIR';
     });
 }
-          }
-        })
-        .catch(() => {
-          el.className = 'off';
-          txt.textContent = 'OFF AIR';
-        });
-    }
 
     checkStream();
     setInterval(checkStream, 30000);
